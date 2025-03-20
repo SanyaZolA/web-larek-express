@@ -18,9 +18,9 @@ export const getProduct = async (_req: Request, res: Response) => {
       })),
       total: products.length,
     };
-    res.json(response);
+    return res.json(response);
   } catch (err) {
-    res.status(500).json({ message: 'Ошибка при получении данных', error: err });
+    return res.status(500).json({ message: 'Ошибка при получении данных', error: err });
   }
 };
 
@@ -31,7 +31,7 @@ export const postProduct = async (req: Request, res: Response, next: NextFunctio
     return res.status(201).json({ message: 'Товар успешно создан', product });
   } catch (err: any) {
     if (err.code === 11000) {
-      return res.status(409).json({ message: 'Товар с таким названием уже существует' });
+      return res.status(400).json({ message: 'Товар с таким названием уже существует' });
     }
     return next(err);
   }
