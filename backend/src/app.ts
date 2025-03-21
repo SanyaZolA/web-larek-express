@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { errors } from 'celebrate';
 import { errorLogger, requestLogger } from './middlewares/logger';
-import { validateProduct, validateOrder } from './middlewares/validatons';
 import productRoutes from './routes/product';
 import orderRoute from './routes/order';
 import errorMiddleware from './middlewares/error-handler';
@@ -22,6 +21,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
+
+if (!DB_ADDRESS) {
+  throw new Error('DB_ADDRESS нет в .env');
+}
 
 // Подключаем базу данных
 mongoose.connect(DB_ADDRESS);
