@@ -11,7 +11,7 @@ import errorMiddleware from './middlewares/error-handler';
 
 const app = express();
 dotenv.config();
-const { PORT, DB_ADDRESS } = process.env;
+const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/weblarek' } = process.env;
 
 // Логирование всех запросов
 app.use(requestLogger);
@@ -21,10 +21,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
-
-if (!DB_ADDRESS) {
-  throw new Error('DB_ADDRESS нет в .env');
-}
 
 // Подключаем базу данных
 mongoose.connect(DB_ADDRESS);
