@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import Product from '../models/models';
+import ConflictError from '../errors/conflict-error';
 
-export const getProduct = async (_req: Request, res: Response) => {
+export const getProduct = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const products = await Product.find();
     const response = {
@@ -20,7 +21,7 @@ export const getProduct = async (_req: Request, res: Response) => {
     };
     return res.json(response);
   } catch (err) {
-    return res.status(500).json({ message: 'Ошибка при получении данных', error: err });
+    return next(err);
   }
 };
 
@@ -31,7 +32,7 @@ export const postProduct = async (req: Request, res: Response, next: NextFunctio
     return res.status(201).json({ message: 'Товар успешно создан', product });
   } catch (err: any) {
     if (err.code === 11000) {
-      return res.status(400).json({ message: 'Товар с таким названием уже существует' });
+      return next(new ConflictError('Товар с таким названием уже существует'));
     }
     return next(err);
   }
