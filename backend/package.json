@@ -1,7 +1,7 @@
 {
   "name": "weblarek_backend",
   "version": "1.0.0",
-  "description": "< Добавьте описание проекта в свободной форме >",
+  "description": "Ларек интересных вещей",
   "main": "dist/app.js",
   "scripts": {
     "lint": "eslint src/**/*.ts --fix",
