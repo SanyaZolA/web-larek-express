@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
+import { Error as MongooseError } from 'mongoose';
+import BadRequestError from '../errors/bad-request-error';
 import Product from '../models/models';
 import ConflictError from '../errors/conflict-error';
+import normalizedErrorMessage from '../../ulits/normalizedErrorMessage';
 
 export const getProduct = async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -27,11 +30,19 @@ export const getProduct = async (_req: Request, res: Response, next: NextFunctio
 
 export const postProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const product = new Product(req.body);
-    await product.save();
+    const {
+      description, image, category, price, title,
+    } = req.body;
+    const product = await Product.create({
+      description, image, category, price, title,
+    });
     return res.status(201).json({ message: 'Товар успешно создан', product });
-  } catch (err: any) {
-    if (err.code === 11000) {
+  } catch (err) {
+    console.log(err);
+    if (err instanceof MongooseError.ValidationError) {
+      return next(new BadRequestError(normalizedErrorMessage(err)));
+    }
+    if (err instanceof Error && err.message.includes('E11000')) {
       return next(new ConflictError('Товар с таким названием уже существует'));
     }
     return next(err);

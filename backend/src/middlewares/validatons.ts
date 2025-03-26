@@ -61,7 +61,8 @@ export const validateProduct = celebrate({
 
     title: Joi.string().min(2).max(30).required()
       .messages({
-        'string.min': 'Некорректный формат имени',
+        'string.min': 'Некорректный формат именb - title должен быть больше 2 символов',
+        'string.max': 'Некорректный формат имени - title должен быть меньше 30 символов',
         'any.required': 'Поле "title" обязательно',
       }),
 

@@ -1,15 +1,28 @@
 import { NextFunction, Request, Response } from 'express';
 import { CelebrateError } from 'celebrate';
+import { StatusCodes } from 'http-status-codes';
 import BadRequestError from '../errors/bad-request-error';
 import NotFoundError from '../errors/not-found-error';
 import ConflictError from '../errors/conflict-error';
 
-const errorMiddleware = (err: any, _req: Request, res: Response, _next: NextFunction) => {
+const extractCelebrateErrorMessage = (err: CelebrateError): string => {
+  const errorDetails = err.details;
+  let errorMessage = 'Ошибка валидации';
+
+  errorDetails.forEach((errorDetail) => {
+    if (errorDetail && errorDetail.details && Array.isArray(errorDetail.details)
+      && errorDetail.details.length > 0) {
+      errorMessage = errorDetail.details[0].message;
+    }
+  });
+
+  return errorMessage;
+};
+
+const errorMiddleware = (err: any, _req: Request, res: Response, next: NextFunction) => {
   if (err instanceof CelebrateError) {
-    return res.status(400).json({
-      message: 'Ошибка валидации данных',
-      details: err.details,
-    });
+    const message = extractCelebrateErrorMessage(err);
+    return res.status(400).send({ message });
   }
 
   if (err instanceof BadRequestError) {
@@ -24,10 +37,10 @@ const errorMiddleware = (err: any, _req: Request, res: Response, _next: NextFunc
     return res.status(err.statusCode).json({ message: err.message });
   }
 
-  // Обработка других ошибок
-  return res.status(500).json({
-    message: 'Что-то пошло не так на сервере.',
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    message: 'На сервере произошла ошибка',
   });
+  return next(err);
 };
 
 export default errorMiddleware;

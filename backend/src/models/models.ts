@@ -15,9 +15,9 @@ const productSchema = new mongoose.Schema<IProduct>(
   {
     title: {
       type: String,
-      minlength: 2,
-      maxlength: 30,
-      required: true,
+      minlength: [2, 'Минимальная длинна - 2 символа'],
+      maxlength: [30, 'Максимальная длинна - 30 символов'],
+      required: [true, 'Поле "title" обязательно'],
       unique: true,
     },
     image: {
@@ -34,6 +34,7 @@ const productSchema = new mongoose.Schema<IProduct>(
     price: {
       type: Number,
       required: true,
+      default: null,
     },
   },
   { versionKey: false },

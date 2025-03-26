@@ -3,7 +3,6 @@ import path from 'path';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { errors } from 'celebrate';
 import { errorLogger, requestLogger } from './middlewares/logger';
 import productRoutes from './routes/product';
 import orderRoute from './routes/order';
@@ -29,13 +28,13 @@ mongoose.connect(DB_ADDRESS);
 app.use('/product', productRoutes);
 app.use('/order', orderRoute);
 
-// Обработка ошибок валидации celebrate
-app.use(errors());
-
 // Логирование ошибок
 app.use(errorLogger);
 
 // Общий обработчик ошибок
 app.use(errorMiddleware);
 
-app.listen(PORT);
+// Запускаем сервер на указанном порту
+app.listen(PORT, () => {
+  console.log('ок');
+});
